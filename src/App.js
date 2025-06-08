@@ -33,13 +33,11 @@ function App() {
   }, []);
 
   const handlePrevious = () => {
-    if (currentPage === 1) return;
-    setCurrentPage(prev => prev - 1);
+    setCurrentPage(prev => Math.max(1, prev - 1));
   };
 
   const handleNext = () => {
-    if (currentPage === totalPages) return;
-    setCurrentPage(prev => prev + 1);
+    setCurrentPage(prev => Math.min(totalPages, prev + 1));
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -75,8 +73,8 @@ function App() {
       <div className="pagination">
         <button
           onClick={handlePrevious}
-          data-testid="previous-button"
           className={currentPage === 1 ? 'disabled' : ''}
+          data-testid="previous-button"
         >
           Previous
         </button>
@@ -87,8 +85,8 @@ function App() {
 
         <button
           onClick={handleNext}
-          data-testid="next-button"
           className={currentPage === totalPages ? 'disabled' : ''}
+          data-testid="next-button"
         >
           Next
         </button>
