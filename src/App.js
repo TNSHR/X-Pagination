@@ -15,18 +15,15 @@ function App() {
         const response = await fetch(
           'https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json'
         );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         const data = await response.json();
         setEmployees(data);
         setTotalPages(Math.ceil(data.length / itemsPerPage));
         setError(null);
-      } catch (error) {
+      } catch (err) {
         setError('Failed to fetch data');
-        console.error('Error fetching data:', error);
+        console.error('Error fetching data:', err);
       } finally {
         setLoading(false);
       }
@@ -36,23 +33,20 @@ function App() {
   }, []);
 
   const handlePrevious = () => {
-    setCurrentPage((prev) => Math.max(1, prev - 1));
+    if (currentPage === 1) return;
+    setCurrentPage(prev => prev - 1);
   };
 
   const handleNext = () => {
-    setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+    if (currentPage === totalPages) return;
+    setCurrentPage(prev => prev + 1);
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentEmployees = employees.slice(startIndex, startIndex + itemsPerPage);
 
-  if (loading) {
-    return <div className="loading">Loading employee data...</div>;
-  }
-
-  if (error) {
-    return <div className="error">{error}</div>;
-  }
+  if (loading) return <div className="loading">Loading employee data...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="App">
@@ -67,12 +61,12 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {currentEmployees.map((employee) => (
-            <tr key={employee.id}>
-              <td>{employee.id}</td>
-              <td>{employee.name}</td>
-              <td>{employee.email}</td>
-              <td>{employee.role}</td>
+          {currentEmployees.map(emp => (
+            <tr key={emp.id}>
+              <td>{emp.id}</td>
+              <td>{emp.name}</td>
+              <td>{emp.email}</td>
+              <td>{emp.role}</td>
             </tr>
           ))}
         </tbody>
@@ -81,8 +75,8 @@ function App() {
       <div className="pagination">
         <button
           onClick={handlePrevious}
-          disabled={currentPage === 1}
           data-testid="previous-button"
+          className={currentPage === 1 ? 'disabled' : ''}
         >
           Previous
         </button>
@@ -93,8 +87,8 @@ function App() {
 
         <button
           onClick={handleNext}
-          disabled={currentPage === totalPages}
           data-testid="next-button"
+          className={currentPage === totalPages ? 'disabled' : ''}
         >
           Next
         </button>
